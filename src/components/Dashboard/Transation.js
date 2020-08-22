@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -10,7 +10,7 @@ import Title from './Title';
 import axios from "axios";
 import {URL} from "../../consts";
 import IconButton from '@material-ui/core/IconButton';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -46,7 +46,7 @@ export default function Transations(props) {
         transation_id_parent: null
     })
 
-    useEffect(()=> {
+    useEffect(() => {
         axios({
             method: 'get',
             url: URL + '/transations',
@@ -75,11 +75,19 @@ export default function Transations(props) {
             }
         }).then(res => {
             console.log("successfully submitted");
-            setTransations(prev => [...prev, ...res.data ]);
+            setTransations(prev => [...prev, ...res.data]);
             setOpen(false);
+            setNewTransation({ customer_id: null,
+                product_id: null,
+                transation_type: 'OUT',
+                quantity: null,
+                transation_id_parent: null})
         }).catch(error => {
-            console.log('error', error.response.data);
-            alert('something went wrong');
+            console.log('error', error.response);
+            if (error.response.data.hasOwnProperty('product') && error.response.data.product[0] === "must exist")
+                alert('Product ID not found in our datanase');
+            if (error.response.data.hasOwnProperty('customer') && error.response.data.customer[0] === "must exist")
+                alert('Customer ID not found in our database');
             props.history.push("/transations");
         })
     }
@@ -96,9 +104,9 @@ export default function Transations(props) {
         setNewTransation({...newTransation, transation_type: event.target.value});
     };
 
-    const dateformat = (datetime) =>{
+    const dateformat = (datetime) => {
         let d = new Date(datetime);
-        return `${d.getFullYear()}-${ ("0" + d.getMonth()).slice(-2)}-${ ("0" + d.getDate()).slice(-2)} ${ ("0" + d.getHours()).slice(-2)}:${ ("0" + d.getMinutes()).slice(-2)}:${ ("0" + d.getSeconds()).slice(-2)}`
+        return `${d.getFullYear()}-${("0" + d.getMonth()).slice(-2)}-${("0" + d.getDate()).slice(-2)} ${("0" + d.getHours()).slice(-2)}:${("0" + d.getMinutes()).slice(-2)}:${("0" + d.getSeconds()).slice(-2)}`
     }
     return (
         <React.Fragment>
@@ -112,7 +120,7 @@ export default function Transations(props) {
                         <TableCell>Customer Name</TableCell>
                         <TableCell>Product Title</TableCell>
                         <TableCell>Quantity</TableCell>
-                        <TableCell align="right">Transation Type</TableCell>
+                        <TableCell align="center">Transation Type</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -131,7 +139,7 @@ export default function Transations(props) {
             </Table>
             <div className='add-transation-btn'>
                 <IconButton aria-label="add" color="primary" onClick={handleClickOpen}>
-                    <AddCircleOutlineIcon fontSize='large' />
+                    <AddCircleIcon fontSize='large'/>
                 </IconButton>
             </div>
             <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth={true}>
@@ -142,19 +150,19 @@ export default function Transations(props) {
                             autoFocus
                             margin="dense"
                             id="name"
-                            label="Customer ID"
+                            label="Product ID"
                             type="text"
-                            value={newTransation.customer_id}
-                            onChange={e => setNewTransation({...newTransation, customer_id: e.target.value})}
+                            value={newTransation.product_id}
+                            onChange={e => setNewTransation({...newTransation, product_id: e.target.value})}
                             fullWidth
                         />
                         <TextField
                             margin="dense"
                             id="name"
-                            label="Product ID"
+                            label="Customer ID"
                             type="text"
-                            value={newTransation.product_id}
-                            onChange={e => setNewTransation({...newTransation, product_id: e.target.value})}
+                            value={newTransation.customer_id}
+                            onChange={e => setNewTransation({...newTransation, customer_id: e.target.value})}
                             fullWidth
                         />
                         <TextField
@@ -177,9 +185,10 @@ export default function Transations(props) {
                         />
                         <FormControl component="fieldset" style={{marginTop: '30px'}}>
                             <FormLabel component="legend">Transation Type</FormLabel>
-                            <RadioGroup aria-label="gender" name="transation_type" value={newTransation.transation_type} onChange={handleChange}>
-                                <FormControlLabel value="OUT" control={<Radio />} label="OUT" />
-                                <FormControlLabel value="IN" control={<Radio />} label="IN" />
+                            <RadioGroup aria-label="gender" name="transation_type" value={newTransation.transation_type}
+                                        onChange={handleChange}>
+                                <FormControlLabel value="OUT" control={<Radio/>} label="OUT"/>
+                                <FormControlLabel value="IN" control={<Radio/>} label="IN"/>
                             </RadioGroup>
                         </FormControl>
                     </DialogContent>

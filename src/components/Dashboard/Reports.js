@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -9,6 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Title from './Title';
 import axios from "axios";
 import {URL} from "../../consts";
+import {Link} from 'react-router-dom';
 
 function preventDefault(event) {
     event.preventDefault();
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function Products() {
+export default function Reports() {
     const classes = useStyles();
     const [products, setProducts] = useState([]);
     useEffect(()=> {
@@ -39,16 +39,15 @@ export default function Products() {
     }, [])
     return (
         <React.Fragment>
-            <Title>Products</Title>
+            <Title>Inventory Summary Report</Title>
             <Table size="small">
                 <TableHead>
                     <TableRow>
                         <TableCell>S. No.</TableCell>
-                        <TableCell>Product Id</TableCell>
-                        <TableCell>Product Title</TableCell>
-                        <TableCell>Quantity Total</TableCell>
-                        <TableCell>Quantity Booked</TableCell>
-                        <TableCell align="center">Price</TableCell>
+                        <TableCell>Item Id</TableCell>
+                        <TableCell>Item Name</TableCell>
+                        <TableCell>Available Quantity</TableCell>
+                        <TableCell></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -57,9 +56,8 @@ export default function Products() {
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>{row.product_id}</TableCell>
                             <TableCell>{row.product_title}</TableCell>
-                            <TableCell>{row.quantity_total}</TableCell>
-                            <TableCell>{row.quantity_booked}</TableCell>
-                            <TableCell align="center">{row.price}</TableCell>
+                            <TableCell>{row.quantity_total-row.quantity_booked}</TableCell>
+                            <TableCell><Link to={`/detail_report/${row.product_id}`} className="detail-report">Detail Report</Link></TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

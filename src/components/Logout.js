@@ -8,7 +8,6 @@ function Logout(props) {
     useEffect(() => {
         clearSession(props)
         setUerDetails({id: '', name: '', email: ''});
-        alert("Logout Successfully")
     }, [])
 
 

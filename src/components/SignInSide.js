@@ -32,8 +32,8 @@ const useStyles = makeStyles((theme) => ({
         height: '100vh',
         position: 'inherit',
         top: '0px',
-        left: '0px',
-        width: '100%',
+        left: '-240px',
+        width: 'calc(100% + 240px)',
         zIndex: '10001',
     },
     image: {
@@ -99,7 +99,8 @@ export default function SignInSide(props) {
                 // let { from } = props.location.state || { from: { pathname: '/dashboard' } } // retrieves the URL set on the PrivateRoute component above
                 // props.history.push(from);
 
-                props.history.push("/dashboard");
+                window.location.href = '/dashboard'
+                // props.history.push("/dashboard");
 
             })
                 .catch(error => {
